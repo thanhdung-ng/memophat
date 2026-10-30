@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Thông Báo Phạt Vận Chuyển</title>
+<style>
+:root{--bg:#f4f5f7;--panel:#fff;--fg:#1b1f27;--mut:#6b7280;--line:#d9dde3;--acc:#2563eb;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1218;--panel:#181c25;--fg:#e8eaf0;--mut:#98a0b0;--line:#2b3140;--acc:#4f8cff;color-scheme:dark}}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.app{display:grid;grid-template-columns:minmax(300px,400px) 1fr;gap:20px;padding:20px;max-width:1300px;margin:auto}
+@media(max-width:860px){.app{grid-template-columns:1fr}}
+h1{font-size:21px;margin:0 0 4px}.sub{color:var(--mut);font-size:13px;margin:4px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px}
+.card h2{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--acc);margin:0 0 8px}
+label{display:block;font-size:12px;color:var(--mut);margin:8px 0 3px}
+input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);font:inherit}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{width:100%;padding:12px;border:0;border-radius:10px;background:var(--acc);color:#fff;font:600 15px inherit;cursor:pointer}
+.prev{overflow-x:auto}
+.page{background:#fff;color:#000;width:210mm;min-height:297mm;padding:22mm 25mm;margin:0 auto 16px;font:12.5pt/1.45 "Times New Roman",Times,serif;box-shadow:0 2px 12px rgba(0,0,0,.25)}
+.page p{margin:5px 0;text-align:justify}.page .l{margin:0}
+.page h3{text-align:center;font-size:15pt;margin:22px 0 14px}
+.page ul{margin:4px 0;padding-left:28px}.page li{margin:4px 0;text-align:justify}
+.imgs{display:grid;grid-template-columns:1fr 1fr;gap:10px}.imgs img{width:100%;height:62mm;object-fit:contain;border:1px solid #000}
+.np{height:297mm;min-height:0;overflow:hidden;padding:15mm 20mm}
+.ip{padding:12mm;display:flex;flex-direction:column;align-items:center}
+.ip .cap{font-weight:700;font-size:11pt;text-align:center;margin:0 0 5mm}
+.ip .fit{width:186mm;height:252mm;display:flex;align-items:center;justify-content:center}
+.ip img{display:block}
+.bad{border-color:#e5484d!important;box-shadow:0 0 0 1px #e5484d}
+.err{color:#e5484d;font-size:13px;margin:0 0 8px}
+@media print{body{background:#fff}.app{display:block;padding:0}.form{display:none}.page{box-shadow:none;margin:0;page-break-after:always}@page{size:A4;margin:0}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="form">
+ <h1>Thông Báo Phạt Vận Chuyển</h1>
+ <p class="sub">Chọn kho heo và biển số xe, nhập số liệu rồi xuất PDF.</p>
+
+ <div class="card"><h2>1 · Thông tin chung</h2>
+  <label>Trường hợp</label>
+  <select id="tc"><option value="chet">Chết heo</option><option value="thieu">Thiếu heo</option><option value="du">Dư heo</option></select>
+  <label>Chi nhánh (Bên A)</label>
+  <select id="br"><option value="dn">Chi nhánh 3 tại Đồng Nai</option><option value="bp">Chi nhánh tại Bình Phước</option></select>
+  <div class="row">
+   <div><label>Ngày phát sinh</label><input id="ngay" type="date"></div>
+   <div><label>Hạn thanh toán</label><input id="han" type="date"></div>
+  </div>
+ </div>
+
+ <div class="card"><h2>2 · Kho heo (Trung tâm bán heo)</h2>
+  <select id="kho"></select>
+  <label>Địa chỉ</label><textarea id="kdc" rows="2"></textarea>
+ </div>
+
+ <div class="card"><h2>3 · Xe vi phạm</h2>
+  <label>Biển số xe</label>
+  <input id="bs" list="dsxe" placeholder="Chọn hoặc gõ biển số" autocomplete="off">
+  <datalist id="dsxe"></datalist>
+  <div id="tt" class="sub"></div>
+  <label>Tên hợp đồng (nhà xe)</label><input id="nx">
+  <label>Số hợp đồng</label><input id="hd">
+  <label>Nội dung CK</label><input id="ck">
+  <label>Trại xuất</label><input id="trai" placeholder="VD: Trại A">
+  <div class="row">
+   <div><label>Tổng số heo (con)</label><input id="tong" type="number" min="0"></div>
+   <div><label id="lchet">Số heo chết (con)</label><input id="chet" type="number" min="0" value="1"></div>
+   <div><label>Trọng lượng (kg)</label><input id="kg" type="number" min="0" step="any" value="0"></div>
+   <div><label>Giá heo (đ/kg)</label><input id="gia" type="number" min="0" value="0"></div>
+  </div>
+  <label>Sản phẩm đền</label><select id="sp"></select>
+ </div>
+
+ <div class="card"><h2>4 · Hình ảnh đính kèm (trang 2)</h2>
+  <label>Hình ảnh cân heo chết</label><input class="fi" data-g="a" type="file" accept="image/*" multiple>
+  <label>Hình ảnh biên bản</label><input class="fi" data-g="b" type="file" accept="image/*" multiple>
+  <label>Hình ảnh phiếu cân</label><input class="fi" data-g="c" type="file" accept="image/*" multiple>
+  <p class="sub">Không bắt buộc. Mỗi hình nằm riêng một trang A4, tự co vừa khổ giấy. Nhóm nào không có hình thì không có trang.</p>
+ </div>
+ <div class="card"><h2>5 · Cập nhật danh sách (không bắt buộc)</h2>
+  <label>Danh sách xe (cột: số xe, Tên hợp đồng, Mã Số Thuế, Địa Chỉ, Họ tên đại diện, code, Số HĐ)</label>
+  <input id="fxe" type="file" accept=".xlsx,.xls,.csv"><div class="sub" id="n1"></div>
+  <label>Kho heo (Sheet1: STT, KHO HEO, ĐỊA CHỈ · Sheet2: Sản phẩm)</label>
+  <input id="fkho" type="file" accept=".xlsx,.xls,.csv"><div class="sub" id="n2"></div>
+  <p class="sub">Danh sách xe và kho heo đã có sẵn. Chỉ nạp file mới khi cần thay danh sách; bản nạp được nhớ trên trình duyệt này.</p>
+  <button style="background:transparent;color:var(--acc);border:1px solid var(--line);padding:8px" onclick="resetList()">Khôi phục danh sách gốc</button>
+ </div>
+ <div id="err" class="err" hidden></div>
+ <button id="pdf" onclick="savePdf()">Tải PDF</button>
+ <p class="sub" style="text-align:center">Nếu không tải được, mở trang ở tab riêng rồi nhấn Ctrl+P.</p>
+</div>
+<div class="prev" id="prev"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const noacc=s=>String(s??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').replace(/Đ/g,'D');
+const nz=s=>noacc(s).toLowerCase().trim();
+const norm=s=>String(s).toUpperCase().replace(/[^A-Z0-9]/g,'');
+const cl=s=>String(s??'').replace(/\u00a0/g,' ').replace(/\s+/g,' ').trim();
+const vd=v=>{if(!v)return'..../..../........';const[y,m,d]=v.split('-');return d+'/'+m+'/'+y};
+const num=n=>Number(n||0).toLocaleString('vi-VN');
+const iso=d=>d.toISOString().slice(0,10);
+const eom=v=>{const d=v?new Date(v):new Date();return iso(new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,0)))};
+const plate=s=>{const p=norm(s),m=p.match(/^(\d{2}[A-Z]{1,2})(\d{3})(\d{2})$/);return m?m[1]+'-'+m[2]+'.'+m[3]:cl(s)};
+
+const D=['không','một','hai','ba','bốn','năm','sáu','bảy','tám','chín'];
+function r3(n,full){const h=Math.floor(n/100),t=Math.floor(n%100/10),u=n%10,s=[];
+ if(h||full)s.push(D[h],'trăm');
+ if(t>1)s.push(D[t],'mươi');else if(t==1)s.push('mười');else if((h||full)&&u)s.push('lẻ');
+ if(u){if(t>1&&u==1)s.push('mốt');else if(t>=1&&u==5)s.push('lăm');else s.push(D[u])}
+ return s.join(' ')}
+function words(n){n=Math.round(n||0);if(n<=0)return'Không đồng';
+ const U=['','nghìn','triệu','tỷ'],g=[];while(n>0){g.push(n%1000);n=Math.floor(n/1000)}
+ const o=[];for(let i=g.length-1;i>=0;i--)if(g[i])o.push(r3(g[i],i<g.length-1)+(U[i]?' '+U[i]:''));
+ const s=o.join(' ')+' đồng';return s[0].toUpperCase()+s.slice(1)}
+
+const DEF_XE=[{"bs":"60H17153","nx":"Hộ Kinh Doanh Nguyễn Thị Kiều Lợi","code":"2000044478","hd":"5042/CPVN-72-01/2026"},{"bs":"60H17310","nx":"Hộ Kinh Doanh Nguyễn Thị Kiều Lợi","code":"2000044478","hd":"5042/CPVN-18-01/2026"},{"bs":"60C27468","nx":"Hộ Kinh Doanh Đinh Thị Liên","code":"2000081450","hd":"5042/CPVN-69-01/2025"},{"bs":"60C39665","nx":"Hộ Kinh Doanh Đỗ Văn Hùng","code":"2000052473","hd":"5042/CPVN-70-01/2025"},{"bs":"60H07932","nx":"Hộ Kinh Doanh Đỗ Tuấn Anh","code":"2000056801","hd":"5042/CPVN-68-01/2025"},{"bs":"60H40719","nx":"Hộ Kinh Doanh Ninh Bảo Yến Nhi","code":"2000086155","hd":""},{"bs":"60H34432","nx":"Hộ Kinh Doanh Ninh Tiến Đạt","code":"2000086158","hd":"5042/CPVN-122-07/2026"},{"bs":"72C05554","nx":"Hộ Kinh Doanh Nguyễn Thị Thanh Phương","code":"2000082695","hd":"5042/CPVN-106-01/2026"},{"bs":"60C56780","nx":"Hộ Kinh Doanh Huỳnh Văn Trường","code":"2000034465","hd":"CPVN-12-01/2026"},{"bs":"72C10807","nx":"Hộ Kinh Doanh Dương Xuân Đồng","code":"2000056529","hd":"5042/CPVN-11-01/2026"},{"bs":"72H04384","nx":"Hộ Kinh Doanh Dương Xuân Đồng","code":"2000056529","hd":"CPVN-11-01/2026"},{"bs":"72C15967","nx":"Hộ Kinh Doanh Nguyễn Thị Thanh Phương","code":"2000082695","hd":"5042/CPVN-106-01/2026"},{"bs":"60H28622","nx":"Hộ Kinh Doanh Hồ Tân Phong","code":"2000056756","hd":"5042/CPVN-08-01/2026"},{"bs":"50H21775","nx":"Hộ Kinh Doanh Huỳnh Phương Tâm","code":"2000034266","hd":"5042/CPVN-52-01/2026"},{"bs":"60H21121","nx":"Hộ Kinh Doanh Huỳnh Phương Tâm","code":"2000034266","hd":"5042/CPVN-67-01/2026"},{"bs":"50E75840","nx":"Hộ Kinh Doanh Huỳnh Phương Tâm","code":"2000034266","hd":"5042/CPVN-115-03/2026"},{"bs":"60C68675","nx":"Hộ Kinh Doanh Lê Đình Anh Tuấn","code":"2000056955","hd":"5042/CPVN-14-01/263025"},{"bs":"60C42845","nx":"Hộ Kinh Doanh Nguyễn Hoàng Long 2","code":"2000081548","hd":"5042/CPVN-79-01/2025"},{"bs":"60C68324","nx":"Hộ Kinh Doanh Lê Đình Anh Tuấn","code":"2000056955","hd":"5042/CPVN-63-01/263025"},{"bs":"60C68553","nx":"Hộ Kinh Doanh Lê Đình Anh Tuấn","code":"2000056955","hd":"5042/CPVN-04-06/2026"},{"bs":"61C40745","nx":"Công ty TNHH Một Thành Viên DV Mai Ngân","code":"2000078318","hd":"5042/CPVN-89-01/2026"},{"bs":"61C32195","nx":"Công ty TNHH Một Thành Viên DV Mai Ngân","code":"2000078318","hd":"5042/CPVN-89-01/2026"},{"bs":"61H03386","nx":"Hộ Kinh Doanh Nguyễn Thị Cẩm Hằng","code":"2000071532","hd":"5042/CPVN-47-01/2025"},{"bs":"61C21924","nx":"Hộ Kinh Doanh Nguyễn Thị Cẩm Lài","code":"2000081431","hd":"5042/CPVN-42-01/2026"},{"bs":"61C42779","nx":"Hộ Kinh Doanh Trương Thị Bích Hằng","code":"2000081432","hd":"5042/CPVN-28-01/2026"},{"bs":"61H04347","nx":"Hộ Kinh Doanh Trương Thị Bích Hằng","code":"2000081432","hd":"5042/CPVN-28-01/2026"},{"bs":"60H28612","nx":"Hộ Kinh Doanh Ngô Đình Minh","code":"2000083932","hd":"5042/CPVN-114-03/2026"},{"bs":"60E01605","nx":"Hộ Kinh Doanh Ngô Đình Sáng","code":"2000082696","hd":"5042/CPVN-98-01/2026"},{"bs":"60H42230","nx":"Hộ Kinh Doanh Ngô Thị Kim Nguyên","code":"2000033815","hd":"5042/CPVN-121-05/2026"},{"bs":"60C50239","nx":"Hộ Kinh Doanh Lê Hữu Phan","code":"2000083442","hd":"5042/CPVN-112-03/2026"},{"bs":"61C12717","nx":"Hộ Kinh Doanh Nguyễn Đặng Cường","code":"2000055340","hd":"5042/CPVN-60-01/2026"},{"bs":"60H30727","nx":"Hộ Kinh Doanh Nguyễn Đặng Cường","code":"2000055340","hd":"5042/CPVN-60-01/2026"},{"bs":"60C16087","nx":"Hộ Kinh Doanh Nguyễn Thị Hoài Chi","code":"2000076110","hd":"5042/CPVN-05-06/2026"},{"bs":"60H17025","nx":"Hộ Kinh Doanh Nguyễn Thị Hoài Chi","code":"2000076110","hd":"5042/CPVN-05-06/2026"},{"bs":"60C40428","nx":"Hộ kinh doanh Trần Nguyễn Thu Thảo","code":"2000053133","hd":"5042/CPVN-16-06/2026"},{"bs":"60H01886","nx":"Hộ Kinh Doanh Vũ Thị Liên","code":"2000048069","hd":"5042/CPVN-87-01/2026"},{"bs":"60H17313","nx":"Hộ Kinh Doanh Nguyễn Thành Quân","code":"2000056788","hd":"5042/CPVN-82-01/2025"},{"bs":"60H17208","nx":"Hộ Kinh Doanh Nguyễn Thành Quân","code":"2000056788","hd":"5042/CPVN-82-01/2025"},{"bs":"60C23238","nx":"Hộ Kinh Doanh Nguyễn Thị Lệ Nương","code":"2000057101","hd":"5042/CPVN-49-01/2026"},{"bs":"60C37909","nx":"Hộ Kinh Doanh Nguyễn Thị Dung","code":"2000056680","hd":"5042/CPVN-19-01/2026"},{"bs":"60C31058","nx":"Hộ Kinh Doanh Nguyễn Thị Dung","code":"2000056680","hd":"5042/CPVN-19-01/2026"},{"bs":"60C43538","nx":"Hộ Kinh Doanh Nguyễn Thị Lệ Nương","code":"2000057101","hd":"5042/CPVN-49-01/2026"},{"bs":"51C93773","nx":"Hộ Kinh Doanh Nguyễn Văn Anh Hùng","code":"2000056577","hd":"5042/CPVN-48-01/2026"},{"bs":"61H01764","nx":"Hộ Kinh Doanh Lê Thế Quyết","code":"2000041059","hd":"5042/CPVN-77-01/263025"},{"bs":"60C19726","nx":"Hộ Kinh Doanh Nhật Vân Phong","code":"2000045079","hd":"5042/CPVN-50-01/2026"},{"bs":"60H01685","nx":"BỊ NGƯNG VẬN CHUYỂN","code":"#N/A","hd":""},{"bs":"60H17329","nx":"Hộ Kinh Doanh Nguyễn Vũ Hòa","code":"2000040933","hd":"5042/CPVN-06-06/2026"},{"bs":"72H01434","nx":"Hộ Kinh Doanh Nguyễn Văn Xuất","code":"2000074158","hd":"5042/CPVN-45-01/2025"},{"bs":"60E01607","nx":"Hoàng Thị Ngọc Châu","code":"2000045245","hd":"5042/CPVN-09-01/2025"},{"bs":"60H17006","nx":"Hộ Kinh Doanh Phan Thị Kim Uyên","code":"2000057264","hd":"5042/CPVN-21-01/2026"},{"bs":"51C85357","nx":"Hộ Kinh Doanh Thái Thống Nhất","code":"2000055344","hd":"5042/CPVN-24-01/2026"},{"bs":"60C54180","nx":"Hộ Kinh Doanh Trần Mạnh Hùng","code":"2000057371","hd":"5042/CPVN-81-01/2026"},{"bs":"51C91385","nx":"Hộ Kinh Doanh Võ Trọng Nghĩa","code":"2000079946","hd":"5042/CPVN-77-11/2025"},{"bs":"60C42352","nx":"Hộ Kinh Doanh Nguyễn Ngọc Mỹ Duyên","code":"2000081549","hd":"5042/CPVN-78-01/2025"},{"bs":"60H03361","nx":"Huỳnh Thị Ngọc Trang","code":"2000035496","hd":"5042/CPVN-10-01/2025"},{"bs":"60C19835","nx":"Hộ Kinh Doanh Vũ Văn Hoan","code":"2000057328","hd":"5042/CPVN-66-01/2025"},{"bs":"60C16977","nx":"Hộ Kinh Doanh Vũ Thị Hồng Thúy","code":"2000057503","hd":"5042/CPVN-73-01/2026"},{"bs":"60F00706","nx":"Hộ Kinh Doanh Vũ Thị Hồng Thúy","code":"2000057503","hd":"5042/CPVN-45-01/2026"},{"bs":"60H08227","nx":"Hộ Kinh Doanh Vũ Thị Hồng Thúy","code":"2000057503","hd":"5042/CPVN-54-01/2026"},{"bs":"60G00093","nx":"Hộ Kinh Doanh Đào Nhật Hòa","code":"2000072752","hd":"5042/CPVN-46-01/2026"},{"bs":"60H12838","nx":"Hộ Kinh Doanh Vũ Thị Hồng Thúy","code":"2000057503","hd":"5042/CPVN-45-01/2026"},{"bs":"60C40844","nx":"Hộ Kinh Doanh Huỳnh Lê Thương","code":"2000083445","hd":"5042/CPVN-110-01/2026"},{"bs":"60E01614","nx":"Hộ Kinh Doanh Vũ Văn Hải","code":"2000057056","hd":"5042/CPVN-58-01/2026"},{"bs":"60C42068","nx":"Hộ Kinh Doanh Vũ Văn Hòa","code":"2000056981","hd":"5042/CPVN-86-01/2025"},{"bs":"60C27010","nx":"Hộ Kinh Doanh Vũ Văn Hòa","code":"2000056981","hd":"5042/CPVN-86-01/2025"},{"bs":"60C45199","nx":"Hộ Kinh Doanh Hoàng Thị Thúy An","code":"2000042181","hd":"5042/CPVN-102-01/2026"},{"bs":"60H21982","nx":"Hộ Kinh Doanh Vũ Văn Hoan","code":"2000057328","hd":"5042/CPVN-66-01/2025"},{"bs":"60C22889","nx":"Hộ Kinh Doanh Nguyễn Thị Kim Ngọc","code":"2000055850","hd":"5042/CPVN-30-01/2026"},{"bs":"61C25818","nx":"Hộ Kinh Doanh Mai Văn Bông","code":"2000041116","hd":"5042/CPVN-105-01/2026"},{"bs":"50E67403","nx":"Hộ Kinh Doanh Mai Văn Bông","code":"2000041116","hd":"5042/CPVN-117-03/2026"},{"bs":"61C30752","nx":"Công ty TNHH Một Thành Viên DV Mai Ngân","code":"2000078318","hd":"5042/CPVN-89-01/2026"},{"bs":"60F01559","nx":"Hộ Kinh Doanh Nguyễn Thị Kim Loan","code":"2000065277","hd":"5042/CPVN-15-06/2026"},{"bs":"72C07655","nx":"Hộ Kinh Doanh Nguyễn Thị Hồng Phượng","code":"2000068188","hd":"BP0008/CPVN-VC-03/2026"},{"bs":"72C07509","nx":"Hộ Kinh Doanh Nguyễn Thị Hồng Phượng","code":"2000068188","hd":"BP0008/CPVN-VC-03/2026"},{"bs":"72H01666","nx":"Hộ Kinh Doanh Nguyễn Thị Hồng Phượng","code":"2000068188","hd":"BP0008/CPVN-VC-03/2026"},{"bs":"61C10994","nx":"Hộ Kinh Doanh Mai Ngọc Điệp","code":"2000041792","hd":"5042/CPVN-51-01/263025"},{"bs":"61C35375","nx":"Hộ Kinh Doanh Mai Ngân","code":"2000081696","hd":"5042/CPVN-90-01/2026"},{"bs":"60H17058","nx":"Hộ Kinh Doanh Ngô Thị Kim Ánh","code":"2000081721","hd":"5042/CPVN-62-01/2025"},{"bs":"60H17185","nx":"Hộ Kinh Doanh Huỳnh Văn Trường","code":"2000034465","hd":"5042/CPVN-76-01/2026"},{"bs":"61C33759","nx":"Hộ Kinh Doanh Nguyễn Thị Ngọc Ngân","code":"2000082760","hd":"5042/CPVN-107-01/2026"},{"bs":"61C40634","nx":"Hộ Kinh Doanh Bồ Văn Đông","code":"2000035331","hd":"5042/CPVN-05-01/2026"},{"bs":"61C33942","nx":"Hộ Kinh Doanh Nguyễn Thị Hoàng Dung","code":"2000035329","hd":"5042/CPVN-50-01/2026"},{"bs":"60C44312","nx":"Hộ Kinh Doanh Lê Quang Long","code":"2000039930","hd":"5042/CPVN-80-01/2025"},{"bs":"61H05771","nx":"Hộ Kinh Doanh Mai Văn Bộn","code":"2000036536","hd":"5042/CPVN-29-01/2026"},{"bs":"61C41072","nx":"Hộ Kinh Doanh Mai Văn Lập","code":"2000084030","hd":"5042/CPVN-113-03/2026"},{"bs":"61C15555","nx":"Hộ Kinh Doanh Mai Văn Bộn","code":"2000036536","hd":"5042/CPVN-29-01/2026"},{"bs":"60H21308","nx":"Công Ty Tnhh Một Thành Viên Bảo Anh Tâm","code":"2000027199","hd":"5042/CPVN-71-01/2026"},{"bs":"60C10813","nx":"Hộ Kinh Doanh Phan Trọng Thanh","code":"2000038101","hd":"5042/CPVN-88-01/2026"},{"bs":"86C11072","nx":"Hộ Kinh Doanh Nguyễn Lê Hoàng","code":"2000036407","hd":"5042/CPVN-75-01/2026"},{"bs":"60E01699","nx":"Hộ Kinh Doanh Nguyễn Thị Trang","code":"2000040782","hd":"5042/CPVN-38-01/2026"},{"bs":"60F01584","nx":"Hộ Kinh Doanh Văn Phú Sử","code":"2000038658","hd":"5042/CPVN-08-06/2026"},{"bs":"61C24919","nx":"Hộ Kinh Doanh Mai Văn Thơ","code":"2000041118","hd":"5042/CPVN-39-01/2025"},{"bs":"61C45536","nx":"Hộ Kinh Doanh Nguyễn Ngọc Kiều Tiên","code":"2000034284","hd":"5042/CPVN-27-01/2025"},{"bs":"61C51234","nx":"Hộ Kinh Doanh Lê Thanh Sang","code":"2000036633","hd":"5042/CPVN-13-01/263025"},{"bs":"60C54979","nx":"Công Ty Thhh Vận Tải Nhân Thọ","code":"2000040724","hd":""},{"bs":"60C54562","nx":"Công Ty Thhh Vận Tải Nhân Thọ","code":"2000040724","hd":""},{"bs":"60H12743","nx":"Cty TNHH dịch vụ vận tải Hoàng Hiền","code":"2000073004","hd":"5042/CPVN-53-01/2026"},{"bs":"60H21091","nx":"Hộ Kinh Doanh Lê Bảo Nguyên","code":"2000082040","hd":"5042/CPVN-41-01/2025"},{"bs":"50F06167","nx":"Hộ Kinh Doanh Lê Bảo Nguyên","code":"2000082040","hd":""},{"bs":"60G00109","nx":"Hộ Kinh Doanh Nguyễn Vũ Huyền Trâm","code":"2000046135","hd":"5042/CPVN-01-06/2026"},{"bs":"60C05078","nx":"Hộ Kinh Doanh Nguyễn Vũ Anh Thư","code":"2000081554","hd":"5042/CPVN-57-01/2026"},{"bs":"60H20863","nx":"Hộ Kinh Doanh Nguyễn Vũ Anh Thư","code":"2000081554","hd":"5042/CPVN-57-01/2026"},{"bs":"60C03878","nx":"Hộ Kinh Doanh Nguyễn Ngọc Đoan Trang","code":"2000072965","hd":"5042/CPVN-61-01/2025"},{"bs":"60H14543","nx":"Hộ Kinh Doanh Nguyễn Ngọc Đoan Trang","code":"2000072965","hd":""},{"bs":"60H12794","nx":"Hộ Kinh Doanh Nguyễn Vũ Huyền Trâm","code":"2000046135","hd":"5042/CPVN-01-06/2026"},{"bs":"61C41299","nx":"Hộ kinh doanh - Nguyễn Thị Thùy Linh","code":"2000084856","hd":"5042/CPVN-115-03/2026"},{"bs":"50H16234","nx":"Công Ty Tnhh Dịch Vụ Vận Tải Tư Vấn Môi Trường Sơn Hà","code":"2000038976","hd":"5042/CPVN-04-01/2026"},{"bs":"50H47068","nx":"Công Ty Tnhh Dịch Vụ Vận Tải Tư Vấn Môi Trường Sơn Hà","code":"2000038976","hd":"5042/CPVN-12-06/2026"},{"bs":"60H31513","nx":"Hộ Kinh Doanh Hồng Hải Sơn","code":"2000051706","hd":"5042/CPVN-93-01/2026"},{"bs":"72C07067","nx":"Hộ Kinh Doanh Nguyễn Thị Hồng Phượng","code":"2000068188","hd":"BP0008/CPVN-VC-03/2026"},{"bs":"61C44405","nx":"Công ty TNHH Một Thành Viên DV Mai Ngân","code":"2000078318","hd":"5042/CPVN-55-01/2026"},{"bs":"61C44408","nx":"Công ty TNHH Một Thành Viên DV Mai Ngân","code":"2000078318","hd":"5042/CPVN-55-01/2026"},{"bs":"60H09875","nx":"Hộ Kinh Doanh Nguyễn Thụy Bích Hải","code":"2000064873","hd":"5042/CPVN-17-01/2026"},{"bs":"61H09941","nx":"Hộ Kinh Doanh Bùi Đức Hải","code":"2000081733","hd":"5042/CPVN-99-01/2026"},{"bs":"61G00337","nx":"Hộ Kinh Doanh Cơ Sở Sang Bùi","code":"2000048068","hd":"5042/CPVN-103-01/2026"},{"bs":"61H09924","nx":"Hộ Kinh Doanh Thái Sang","code":"2000081734","hd":"5042/CPVN-100-01/2026"},{"bs":"60C70500","nx":"Hộ Kinh Doanh Nguyễn Thị Quyên","code":"2000081587","hd":"5042/CPVN-83-01/2026"},{"bs":"60C56276","nx":"Hộ Kinh Doanh Nguyễn Thị Kim Ngọc","code":"2000051521","hd":"5042/CPVN-92-01/2026"},{"bs":"60C70506","nx":"Hộ Kinh Doanh Nguyễn Thị Kim Ngọc","code":"2000051521","hd":"5042/CPVN-13-06/2026"},{"bs":"60C46094","nx":"Hộ Kinh Doanh Nguyễn Thị Ngọc Nga","code":"2000081591","hd":"5042/CPVN-85-01/2025"},{"bs":"60H19549","nx":"Hộ Kinh Doanh Nguyễn Thị Ngọc Nga","code":"2000081591","hd":""},{"bs":"60K55594","nx":"Hộ Kinh Doanh Nguyễn Thị Ngọc Nga","code":"2000081591","hd":"5042/CPVN-115-04/2026"},{"bs":"60K92785","nx":"Hộ Kinh Doanh Nguyễn Thị Ngọc Nga","code":"2000081591","hd":"5042/CPVN-85-01/2025"},{"bs":"60K60440","nx":"Hộ Kinh Doanh Nguyễn Thanh Sang","code":"2000053379","hd":"5042/CPVN-76/2025"},{"bs":"60K82292","nx":"Hộ Kinh Doanh Nguyễn Thanh Sang","code":"2000053379","hd":"5042/CPVN-75/2025"},{"bs":"60H17294","nx":"Hộ Kinh Doanh Trần Thanh Quý","code":"2000052188","hd":"5042/CPVN-10-06/2026"},{"bs":"60H12923","nx":"Hộ Kinh Doanh Nguyễn Mạnh Hùng 3","code":"2000052222","hd":"5042/CPVN-18-06/2026"},{"bs":"60F01566","nx":"Hộ Kinh Doanh Phan Thị Thùy Trang","code":"2000052418","hd":"5042/CPVN-17-06/2026"},{"bs":"61H09763","nx":"Hộ Kinh Doanh Lê Thanh Trọng","code":"2000052513","hd":"5042/CPVN-14-06/2026"},{"bs":"60H19763","nx":"Hộ Kinh Doanh Đỗ Thị Bảo Yến","code":"2000081465","hd":"5042/CPVN-59-01/2026"},{"bs":"60H19857","nx":"Hộ Kinh Doanh Đỗ Văn Hùng","code":"2000052473","hd":"5042/CPVN-64-01/2025"},{"bs":"60C68607","nx":"Hộ Kinh Doanh Phạm Hoàng Quân","code":"2000051698","hd":"5042/CPVN-20-01/2026"},{"bs":"60C68902","nx":"Hộ Kinh Doanh Phạm Hoàng Quân","code":"2000051698","hd":"5042/CPVN-74-01/2026"},{"bs":"60H19198","nx":"Hộ Kinh Doanh Bùi Bảo Quốc","code":"2000071346","hd":"5042/CPVN-07-06/2026"},{"bs":"60H20919","nx":"Hộ Kinh Doanh Bùi Ngọc Hoàng","code":"2000080848","hd":"5042/CPVN-43-01/2026"},{"bs":"60H20827","nx":"Hộ Kinh Doanh Bùi Ngọc Hoàng","code":"2000080848","hd":"5042/CPVN-120-05/2026"},{"bs":"60H21676","nx":"Hộ Kinh Doanh Nguyễn Thị Ngọc Quyên 2","code":"2000084588","hd":"5042/CPVN-118-05/2026"},{"bs":"60H39736","nx":"Hộ Kinh Doanh Đặng Thị Ánh","code":"2000071347","hd":"5042/CPVN-108-01/2026"},{"bs":"61E03031","nx":"Hộ Kinh Doanh Ngô Thị Mỹ Hiền","code":"2000071533","hd":"CPVN-01/2025"},{"bs":"60C75178","nx":"Hộ Kinh Doanh Nguyễn Thị Huyền","code":"2000072458","hd":""},{"bs":"60C75075","nx":"Hộ Kinh Doanh Hộ Kinh Doanh Nguyễn Thị Dung","code":"2000081720","hd":"5042/CPVN-94-01/2026"},{"bs":"60C76613","nx":"Hộ Kinh Doanh Nguyễn Chí Hiếu","code":"2000075210","hd":"5042/CPVN-95-01/2026"},{"bs":"60C77217","nx":"Hộ Kinh Doanh Nguyễn Văn Dũng 1","code":"2000072721","hd":"0026/CPVN - 001/2026"},{"bs":"60C77127","nx":"Hộ Kinh Doanh Nguyễn Văn Dũng 1","code":"2000072721","hd":"5042/CPVN-32-01/2026"},{"bs":"60C77597","nx":"Hộ Kinh Doanh Nguyễn Văn Dũng 1","code":"2000072721","hd":"0026/CPVN - 001/2026"},{"bs":"60C78944","nx":"Hộ Kinh Doanh Nguyễn Văn Dũng 1","code":"2000072721","hd":"0026/CPVN - 001/2026"},{"bs":"60C68305","nx":"Hộ Kinh Doanh Nguyễn Văn Dũng 1","code":"2000072721","hd":"5042/CPVN-109-01/2026"},{"bs":"60H21223","nx":"Hộ Kinh Doanh Đào Nhật Hòa","code":"2000072752","hd":"CPVN-03-01/2026"},{"bs":"60H31478","nx":"Hộ Kinh Doanh Mai Thị Thu Thảo","code":"2000081553","hd":"5042/CPVN-58-01/263025"},{"bs":"60H32646","nx":"Hộ Kinh Doanh Nguyễn Ngọc Đoan Trang","code":"2000072965","hd":"5042/CPVN-02-06/2026"},{"bs":"60C73025","nx":"Hộ Kinh Doanh Nguyễn Chí Hiếu","code":"2000075210","hd":"5042/CPVN-78-11/2025"},{"bs":"60K60294","nx":"Hộ Kinh Doanh Nguyễn Chí Hiếu","code":"2000075210","hd":"5042/CPVN-96-01/2026"},{"bs":"60H33339","nx":"Hộ Kinh Doanh Bùi Bảo Quốc","code":"2000071346","hd":"21-12-2025/PLHDVC"},{"bs":"60H27799","nx":"Hộ Kinh Doanh Bùi Thị Thu Hà","code":"2000080847","hd":"5042/CPVN-40-01/2026"},{"bs":"86A28096","nx":"Hộ Kinh Doanh Lê Đình Lâm Phan","code":"2000051532","hd":"5042/CPVN-97-01/2026"},{"bs":"60H22888","nx":"Hộ Kinh Doanh Bùi Thị Thu Hà","code":"2000080847","hd":"5042/CPVN-56-01/2026"},{"bs":"60H28633","nx":"Hộ Kinh Doanh Vương Thị Ngọc Nữ","code":"2000084513","hd":"5042/CPVN-116-03/2026"},{"bs":"60H42397","nx":"Hộ Kinh Doanh Nguyễn Văn Tân 3","code":"2000084514","hd":"5042/CPVN-119-05/2026"}];
+const DEF_KHO=[{"kv":"","name":"Hòa Bình","addr":"Thôn Cao Đường, Xã Cao Dương, Tỉnh Phú Thọ"},{"kv":"","name":"Hải Phòng","addr":"Thôn Kim Đới 2, Xã Kiến Thụy, Hải Phòng"},{"kv":"","name":"Nghệ An","addr":"Xóm Hồng Sơn, Nam Đàn, Nghệ An"},{"kv":"","name":"Bắc Giang","addr":"TDP Đồn Lương, phường Việt Yên, tỉnh Bắc Ninh"},{"kv":"","name":"Thái Nguyên","addr":"Xóm Cương Lăng- Xã Tân Cương -Tỉnh Thái Nguyên"},{"kv":"","name":"Thanh Hóa","addr":"Thôn Đồng Mực - Xã Biện Thượng - Tỉnh Thanh Hóa"},{"kv":"","name":"Đà Nẵng","addr":"Thôn Nam Sơn, xã Hoà Tiến, tp Đà Nẵng"},{"kv":"","name":"Bình Định","addr":""},{"kv":"","name":"Nha Trang","addr":"Thôn Khánh Thành nam - xã suối Dầu-tỉnh Khánh Hòa"},{"kv":"","name":"Ninh Thuận","addr":"Thôn Đồng Dày, xã Mỹ Sơn, tỉnh khánh Hòa"},{"kv":"","name":"Gia Lai","addr":"Thôn 5, Phường Diên Hồng, Tỉnh Gia Lai"},{"kv":"","name":"Dak Lak","addr":"Tổ dân phố Đồng thuận, Phường Tân An, phường Buôn Ma Thuột, Tỉnh Đắk Lắk"},{"kv":"","name":"Quảng Trị","addr":"Tổ Khe Lấp, phường Đông Hà, tỉnh Quảng Trị"},{"kv":"","name":"Bình Dương","addr":"Khu phố Cầu Đôi, Phường Bến Cát, TP. Hồ Chí Minh"},{"kv":"","name":"Bình Dương 2","addr":"Khu phố Tân Hoà, Phường Hoà Lợi, TP. Hồ Chí Minh"},{"kv":"","name":"Bình Phước 2","addr":"khu Phố Đồng Hưu- P. Chơn Thành- TP Đồng Nai."},{"kv":"","name":"Tây Ninh","addr":"Ấp thạnh đông, P Bình Minh, Tây Ninh"},{"kv":"","name":"Dak Nong","addr":"Thôn thuận nam, thuận an, lâm đồng"},{"kv":"","name":"Lâm Đồng","addr":"Thôn Thanh Bình , Bình Thạnh, Đinh Lâm, Lâm Hà , Lâm Đồng"},{"kv":"","name":"Vũng Tàu","addr":"Ấp Gò Rùa, Xã Nghĩa Thành, TP. Hồ Chí Minh"},{"kv":"","name":"Long An","addr":"Ấp Thủy Tây, xã Thạnh Hóa, tỉnh Tây Ninh"},{"kv":"","name":"Hậu Giang","addr":"Ấp Long Hòa A1 xã Thạnh Hòa, TP Cần Thơ"},{"kv":"","name":"Kiên Giang","addr":"1116 Ấp Hòa Thạnh, xã Châu Thành, tỉnh An Giang"},{"kv":"","name":"Bạc Liêu","addr":"Ấp Bình Thạnh A, xã Vĩnh Phước, tỉnh Cà Mau"}];
+const DEF_VER='2026-10-30b';
+const DEF_SP=["Heo thịt đực 2 máu","Heo thịt 3 máu","Heo thịt cái 2 máu","Heo thịt 3 máu loại -I","Heo hậu bị loại -I","Heo thịt cái 2 máu loại -I","Heo thịt đực 2 máu loại -I","Heo hậu bị loại -II","Heo thịt 3 máu loại -II","Heo nọc loại -I","Heo thịt đực 3 máu (chưa thiến)","Heo thịt đực 2 máu (A)","Heo thịt đực 2 máu loại -II","Heo thịt đực 2 máu (chưa thiến)","Heo Hậu Bị Đực Loại I","Heo thịt cái 2 máu (A)","Heo thịt cái 2 máu loại -II","Heo nái loại -II","Heo nái loại -I","Heo thịt 3 máu (A)"];
+const CASES={
+ chet:{w:'heo chết',lbl:'Số heo chết (con)',bb:'heo chết trên xe vận chuyển',on:'heo chết trên xe'},
+ thieu:{w:'heo thiếu',lbl:'Số heo thiếu (con)',bb:'thiếu heo trên xe vận chuyển',on:'heo thiếu so với số lượng xuất'},
+ du:{w:'heo dư',lbl:'Số heo dư (con)',bb:'dư heo trên xe vận chuyển',on:'heo dư so với số lượng xuất'}};
+let XE=[],KHO=[],SP=[],imgs={};
+const save=(k,v)=>{try{localStorage.setItem('ver',DEF_VER);localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const loadK=k=>{try{if(localStorage.getItem('ver')!==DEF_VER)return[];return JSON.parse(localStorage.getItem(k))||[]}catch(e){return[]}};
+
+function lists(){
+ $('dsxe').innerHTML=XE.map(x=>`<option value="${esc(x.bs)}">${esc(x.nx)}</option>`).join('');
+ const g={};KHO.forEach((k,i)=>(g[k.kv]=g[k.kv]||[]).push([k,i]));
+ const cur=$('kho').value;
+ $('kho').innerHTML='<option value="">— Chọn kho heo —</option>'+Object.entries(g).map(([r,a])=>{const o=a.map(([k,i])=>`<option value="${i}">${esc(k.name)}</option>`).join('');return r?`<optgroup label="${esc(r)}">${o}</optgroup>`:o}).join('');
+ $('kho').value=cur;
+ const s0=$('sp').value;$('sp').innerHTML='<option value="">— Chọn sản phẩm —</option>'+SP.map(s=>`<option>${esc(s)}</option>`).join('');$('sp').value=s0;
+ $('n1').textContent=XE.length?'Đã nạp '+XE.length+' xe':'Chưa nạp danh sách xe';
+ $('n2').textContent=(KHO.length?'Đã nạp '+KHO.length+' kho heo':'Chưa nạp danh sách kho')+' · '+SP.length+' sản phẩm';
+}
+function setCk(){const x=XE.find(r=>norm(r.bs)===norm($('bs').value));const n=noacc($('nx').value);
+ $('ck').value=($('br').value==='dn'?'BP0016 510202100 VN07':'BP0032 510204400 VN07')+' '+(x&&x.code?x.code:'......')+' – '+n}
+function resetList(){try{localStorage.removeItem('xe5');localStorage.removeItem('kho6');localStorage.removeItem('sp1')}catch(e){}XE=DEF_XE;KHO=DEF_KHO;SP=DEF_SP;lists();lookup()}
+function lookup(){const k=norm($('bs').value),x=k&&XE.find(r=>norm(r.bs)===k);
+ if(x){$('nx').value=x.nx;$('hd').value=x.hd;$('tt').textContent='✓ '+x.nx+(x.hd?'':' · chưa có số HĐ, hãy nhập tay')+(x.dd?' · Đại diện: '+x.dd:'')}
+ else $('tt').textContent=k&&XE.length?'Biển số chưa có trong danh sách, nhập tay các ô bên dưới':'';
+ setCk();render()}
+
+function readSheet(f,cb,msg){const csv=/\.csv$/i.test(f.name),r=new FileReader();
+ r.onload=()=>{try{const wb=XLSX.read(r.result,{type:csv?'string':'array'});
+  cb(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,raw:false,defval:''}),wb)}catch(e){$(msg).textContent='Không đọc được file.'}};
+ csv?r.readAsText(f):r.readAsArrayBuffer(f)}
+function header(rows,key){const hi=rows.findIndex(r=>r.some(c=>nz(c).includes(key)));return hi<0?null:{hi,h:rows[hi].map(nz)}}
+const ix=(H,ks)=>{for(const k of ks){const i=H.h.findIndex(c=>c.includes(k));if(i>=0)return i}return -1};
+
+$('fxe').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;
+ readSheet(f,rows=>{const H=header(rows,'so xe');if(!H){$('n1').textContent='Không thấy cột "số xe" trong file.';return}
+  const m={bs:ix(H,['so xe']),nx:ix(H,['ten hop dong','ten']),dc:ix(H,['dia chi']),dd:ix(H,['dai dien']),code:ix(H,['code']),hd:ix(H,['so hd','so hop dong']),mst:ix(H,['thue'])};
+  const c=(r,i)=>i<0?'':cl(r[i]);
+  XE=rows.slice(H.hi+1).filter(r=>c(r,m.bs)).map(r=>({bs:c(r,m.bs),nx:c(r,m.nx),dc:c(r,m.dc),dd:c(r,m.dd),code:c(r,m.code),mst:c(r,m.mst),hd:/^#/.test(c(r,m.hd))?'':c(r,m.hd)}));
+  save('xe5',XE);lists();lookup()},'n1')});
+$('fkho').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;
+ readSheet(f,(rows,wb)=>{const ws2=wb.SheetNames[1];if(ws2){const r2=XLSX.utils.sheet_to_json(wb.Sheets[ws2],{header:1,raw:false,defval:''}),H2=header(r2,'san pham');if(H2){const c2=ix(H2,['san pham']);SP=r2.slice(H2.hi+1).map(r=>cl(r[c2])).filter(Boolean);save('sp1',SP);lists()}}
+  const H=header(rows,'kho heo');if(!H){$('n2').textContent='Không thấy cột "KHO HEO" trong file.';return}
+  const a=ix(H,['khu vuc']),b=ix(H,['kho heo']),d=ix(H,['dia chi']);let kv='';
+  KHO=[];rows.slice(H.hi+1).forEach(r=>{if(a>=0&&cl(r[a]))kv=cl(r[a]);if(cl(r[b]))KHO.push({kv,name:cl(r[b]),addr:cl(r[d])})});
+  save('kho6',KHO);lists();render()},'n2')});
+
+$('kho').addEventListener('change',()=>{const k=KHO[$('kho').value];$('kdc').value=k?k.addr:'';render()});
+$('bs').addEventListener('input',lookup);
+$('tc').addEventListener('change',()=>{$('lchet').textContent=CASES[$('tc').value].lbl;render()});
+$('br').addEventListener('change',()=>{setCk();render()});
+$('nx').addEventListener('input',()=>{setCk();render()});
+$('ngay').addEventListener('change',()=>{$('han').value=eom($('ngay').value);render()});
+const shrink=f=>new Promise(res=>{const u=URL.createObjectURL(f),im=new Image();im.onload=()=>{const s=Math.min(1,1400/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*s;c.height=im.height*s;c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);res({s:c.toDataURL('image/jpeg',.85),w:c.width,h:c.height})};im.onerror=()=>res(null);im.src=u});
+document.querySelectorAll('.fi').forEach(inp=>inp.addEventListener('change',e=>{const g=inp.dataset.g,fs=[...e.target.files];
+ if(!fs.length){imgs[g]=[];return render()}
+ Promise.all(fs.map(shrink)).then(a=>{imgs[g]=a.filter(Boolean);render()})}));
+document.querySelectorAll('input,select,textarea').forEach(e=>e.addEventListener('input',render));
+
+function fit(){const el=document.querySelector('.np');if(!el)return;let s=12;el.style.lineHeight='1.35';el.style.fontSize=s+'pt';
+ while(el.scrollHeight>el.clientHeight+1&&s>8.5){s-=.25;el.style.fontSize=s+'pt'}}
+function render(){
+ const v=k=>esc($(k).value),nd=vd($('ngay').value),han=vd($('han').value);
+ const k=KHO[$('kho').value],kho=k?esc(k.name):'.....',dn=$('br').value==='dn';
+ const kg=Number($('kg').value)||0,gia=Number($('gia').value)||0,tt=Math.round(kg*gia);
+ const c=CASES[$('tc').value],sp=$('sp').value,nx=v('nx')||'.....',bsx=esc(plate($('bs').value))||'.....';
+ const head=`<div><p class="l" style="text-align:left"><b>Công Ty Cổ Phần Chăn Nuôi C.P. Việt Nam</b></p>
+  <p class="l" style="text-align:left"><b>${dn?'Chi nhánh 3 tại Đồng Nai':'Chi nhánh tại Bình Phước'}</b></p>
+  <p class="l" style="text-align:left"><b>MST: 3600224423-${dn?'016':'032'}</b></p></div>`;
+ const p1=`<div class="page np">${head}
+ <h3>THÔNG BÁO PHẠT VẬN CHUYỂN</h3>
+ <p><b>Kính gửi: ${nx.toUpperCase()}</b></p>
+ <p>Hôm nay ngày ${nd}, tại Trung tâm bán heo ${kho}. Địa chỉ: ${v('kdc')||'.....'}</p>
+ <p><b>I. Căn cứ:</b></p>
+ <ul><li>Hợp đồng vận chuyển số: <b>${v('hd')||'.....'}</b> giữa Công Ty Cổ Phần Chăn Nuôi C.P. Việt Nam (Bên A-đơn vị thuê dịch vụ vận chuyển) với ${nx} (Bên B-đơn vị cung cấp dịch vụ vận chuyển).</li>
+ <li>Biên bản xác nhận (vv ${c.bb}) ngày ${nd};</li><li>Và thông tin từ các bộ phận liên quan;</li></ul>
+ <p><b>II. Xác định nội dung vi phạm</b></p>
+ <p style="text-indent:10mm">Trong quá trình xe ${bsx} thuộc NCC ${nx}, vận chuyển heo thịt từ trại ${v('trai')||'.....'} tổng cộng ${$('tong').value||'...'} con, trong đó có ${v('chet')||0} con ${c.on}, trọng lượng ${num(kg)}kg.</p>
+ <p style="text-indent:10mm">&gt;&gt; Căn cứ theo điều khoản của <b>Hợp đồng vận chuyển số</b>, Nhà vận chuyển sẽ đền bù thiệt hại con ${c.w} với mức giá theo giá heo thị trường tại thời điểm phát sinh.</p>
+ <p><b>III. Mức phạt áp dụng</b></p>
+ <p><b>Bên A quyết định phạt Bên B như sau:</b></p>
+ <p>Nhà xe đền bù thiệt hại đối với con ${c.w}${sp?` (<b>${esc(sp)}</b>)`:''}:</p>
+ <p>Giá đền bù = giá heo thịt Swine bán cho khách hàng <b>${num(gia)} đ/kg</b></p>
+ <p><b>Tổng số tiền đền bù: ${num(kg)}kg x ${num(gia)}đ/kg = ${num(tt)} đ</b></p>
+ <p><i>(Số tiền bằng chữ: ${words(tt)}).</i></p>
+ <p><b>Phương thức thanh toán:</b></p>
+ <p class="l">Bên B đóng tiền vào Tài khoản</p>
+ <ul><li>Số Tài khoản: 0121000090194</li><li>Tên Tài khoản: CTY CO PHAN CHAN NUOI C.P VIET NAM</li><li>Ngân hàng: Vietcombank</li><li>Nội dung CK: ${v('ck')}</li></ul>
+ <p><b>IV. Đề nghị thực hiện</b></p>
+ <p>Đề nghị ${nx}</p>
+ <ul><li>Thanh toán khoản tiền phạt và bồi thường nêu trên trước ngày ${han},</li>
+ <li>Trường hợp quá hạn, số tiền trên sẽ được cấn trừ vào cước vận chuyển chưa thanh toán theo Điều 10, Khoản 4, Mục (i) của Hợp đồng.</li></ul>
+ <p style="margin-top:22px;text-align:center"><b>NGƯỜI DUYỆT</b></p>
+ <p style="margin-top:60px;text-align:center"><b>SAMRIT SUWATTANA</b></p></div>`;
+ const G=[['a','HÌNH ẢNH CÂN HEO CHẾT'],['b','HÌNH ẢNH BIÊN BẢN'],['c','HÌNH ẢNH PHIẾU CÂN']].filter(([g])=>(imgs[g]||[]).length);
+ const p2=G.flatMap(([g,t])=>imgs[g].map((m,i)=>{const k=Math.min(186/m.w,252/m.h);
+  return `<div class="page ip"><div class="cap">${t}${imgs[g].length>1?` (${i+1}/${imgs[g].length})`:''} · Xe ${bsx} · Ngày ${nd}</div><div class="fit"><img src="${m.s}" style="width:${(m.w*k).toFixed(1)}mm;height:${(m.h*k).toFixed(1)}mm"></div></div>`})).join('');
+ $('prev').innerHTML=p1+p2;fit();
+}
+const REQ=[['kho','Kho heo'],['kdc','Địa chỉ kho'],['bs','Biển số xe'],['nx','Tên hợp đồng (nhà xe)'],['hd','Số hợp đồng'],['ck','Nội dung CK'],['trai','Trại xuất'],['tong','Tổng số heo'],['chet','Số heo chết'],['kg','Trọng lượng (kg)'],['gia','Giá heo (đ/kg)'],['sp','Sản phẩm đền'],['ngay','Ngày phát sinh'],['han','Hạn thanh toán']];
+const POS=['tong','chet','kg','gia'];
+function missing(){return REQ.filter(([id,t])=>{const v=String($(id).value).trim();
+ if(id==='ck')return !v||v.includes('......');
+ return !v||(POS.includes(id)&&!(Number(v)>0))})}
+document.querySelectorAll('input,select,textarea').forEach(e=>['input','change'].forEach(ev=>e.addEventListener(ev,()=>e.classList.remove('bad'))));
+function fname(){const k=KHO[$('kho').value],d=vd($('ngay').value).replace(/\//g,'-');
+ return (d+' - Kho '+(k?k.name:'')+' - '+plate($('bs').value)).replace(/[\\/:*?"<>|]/g,'').replace(/\s+/g,' ').trim()}
+async function savePdf(){
+ document.querySelectorAll('.bad').forEach(e=>e.classList.remove('bad'));
+ const m=missing();
+ if(m.length){m.forEach(([id])=>$(id).classList.add('bad'));
+  $('err').textContent='Vui lòng nhập đủ thông tin trước khi tải PDF: '+m.map(x=>x[0]==='chet'?CASES[$('tc').value].lbl.replace(' (con)',''):x[1]).join(', ')+'.';$('err').hidden=false;
+  const f=$(m[0][0]);f.scrollIntoView({block:'center'});f.focus();return}
+ $('err').hidden=true;
+ const b=$('pdf'),t=b.textContent;b.disabled=true;b.textContent='Đang tạo PDF...';
+ try{
+  const dl=window.claude?await claude.use('downloads'):null;
+  if(!dl){const t0=document.title;document.title=fname();print();document.title=t0;return}
+  const doc=new jspdf.jsPDF({unit:'mm',format:'a4'}),pgs=[...document.querySelectorAll('.page')];
+  for(let i=0;i<pgs.length;i++){
+   const c=await html2canvas(pgs[i],{scale:2,backgroundColor:'#ffffff'});
+   let w=210,h=210*c.height/c.width;if(h>297){w=210*297/h;h=297}
+   if(i)doc.addPage();
+   doc.addImage(c.toDataURL('image/jpeg',.92),'JPEG',(210-w)/2,0,w,h);
+  }
+  await dl.save({filename:fname()+'.pdf',data:doc.output('blob')});
+ }catch(e){if(!e||e.code!=='declined')alert('Không tạo được PDF. Hãy mở trang ở tab riêng rồi nhấn Ctrl+P.')}
+ finally{b.disabled=false;b.textContent=t}
+}
+$('ngay').value=iso(new Date());$('han').value=eom($('ngay').value);
+XE=loadK('xe5');if(!XE.length)XE=DEF_XE;KHO=loadK('kho6');if(!KHO.length)KHO=DEF_KHO;SP=loadK('sp1');if(!SP.length)SP=DEF_SP;lists();render();
+</script>
+</body>
+</html>
