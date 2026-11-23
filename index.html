@@ -145,7 +145,7 @@ function lists(){
 }
 function setCk(){const x=XE.find(r=>norm(r.bs)===norm($('bs').value));const n=noacc($('nx').value);
  $('ck').value=($('br').value==='dn'?'BP0016 510202100 VN07':'BP0032 510204400 VN07')+' '+(x&&x.code?x.code:'......')+' – '+n}
-function resetList(){try{localStorage.removeItem('xe5');localStorage.removeItem('kho6');localStorage.removeItem('sp1')}catch(e){}XE=DEF_XE;KHO=DEF_KHO;SP=DEF_SP;lists();lookup()}
+function resetList(){try{localStorage.removeItem('xe5');localStorage.removeItem('kho6');localStorage.removeItem('sp1')}catch(e){}XE=DEF_XE;KHO=DEF_KHO;SP=DEF_SP;$('fxe').value='';$('fkho').value='';lists();lookup();$('n1').textContent='✓ Đã khôi phục danh sách gốc: '+XE.length+' xe';$('n2').textContent='✓ Đã khôi phục kho heo gốc: '+KHO.length+' kho'}
 function lookup(){const k=norm($('bs').value),x=k&&XE.find(r=>norm(r.bs)===k);
  if(x){$('nx').value=x.nx;$('tt').textContent='✓ '+x.nx+(x.dd?' · Đại diện: '+x.dd:'')}
  else $('tt').textContent=k&&XE.length?'Biển số chưa có trong danh sách, nhập tay các ô bên dưới':'';
